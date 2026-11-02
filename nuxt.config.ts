@@ -21,6 +21,13 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'en',
       },
+      // Apply saved theme before paint to reduce FOUC (matches useTheme storage key).
+      script: [
+        {
+          key: 'stemply-theme-init',
+          textContent: `(function(){try{var t=localStorage.getItem('stemply-scan:theme');if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark'}else{document.documentElement.classList.remove('dark');document.documentElement.style.colorScheme='light'}}catch(e){}})();`,
+        },
+      ],
     },
   },
 })

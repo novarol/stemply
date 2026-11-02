@@ -1,14 +1,7 @@
 <script setup lang="ts">
-const isDark = ref(false)
+const { theme, toggle } = useTheme()
 
-onMounted(() => {
-  isDark.value = document.documentElement.classList.contains('dark')
-})
-
-function toggleTheme() {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
-}
+const isDark = computed(() => theme.value === 'dark')
 </script>
 
 <template>
@@ -42,7 +35,7 @@ function toggleTheme() {
         type="button"
         class="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
         :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-        @click="toggleTheme"
+        @click="toggle"
       >
         {{ isDark ? 'Light' : 'Dark' }}
       </button>
