@@ -6,6 +6,14 @@
     <p class="mt-2 text-gray-600 dark:text-gray-400">
       Camera scanner and engine selector will live here in a later step.
     </p>
+    <p class="mt-3">
+      <NuxtLink
+        to="/scan/demo"
+        class="text-sm font-medium text-gray-900 underline-offset-2 hover:underline dark:text-gray-100"
+      >
+        Open scanner shell demo →
+      </NuxtLink>
+    </p>
 
     <div class="mt-8">
       <div class="mb-3 flex items-baseline justify-between gap-3">
