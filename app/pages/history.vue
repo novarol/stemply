@@ -17,7 +17,7 @@ function onClearAll() {
       <button
         v-if="list.length"
         type="button"
-        class="rounded border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
+        class="min-h-10 rounded border border-red-300 px-3 py-2 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
         @click="onClearAll"
       >
         Clear all

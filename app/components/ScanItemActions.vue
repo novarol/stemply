@@ -6,6 +6,7 @@ const props = defineProps<{
 }>()
 
 const { updateNote, remove } = useScans()
+const toast = useToast()
 
 const editing = ref(false)
 const draft = ref('')
@@ -16,9 +17,10 @@ async function copyValue() {
   if (!import.meta.client) return
   try {
     await navigator.clipboard.writeText(props.scan.value)
+    toast.success('Copied')
   }
   catch {
-    // Clipboard may be unavailable; ignore.
+    toast.error('Could not copy to clipboard.')
   }
 }
 
@@ -51,7 +53,7 @@ function deleteScan() {
     <div class="flex flex-wrap gap-2 text-sm">
       <button
         type="button"
-        class="rounded border border-gray-300 px-2 py-1 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+        class="min-h-9 rounded border border-gray-300 px-2.5 py-1.5 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
         @click="copyValue"
       >
         Copy
@@ -59,21 +61,21 @@ function deleteScan() {
       <button
         v-if="canOpen"
         type="button"
-        class="rounded border border-gray-300 px-2 py-1 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+        class="min-h-9 rounded border border-gray-300 px-2.5 py-1.5 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
         @click="openValue"
       >
         Open
       </button>
       <button
         type="button"
-        class="rounded border border-gray-300 px-2 py-1 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+        class="min-h-9 rounded border border-gray-300 px-2.5 py-1.5 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
         @click="editing ? cancelEdit() : startEdit()"
       >
         {{ editing ? 'Cancel' : 'Note' }}
       </button>
       <button
         type="button"
-        class="rounded border border-red-300 px-2 py-1 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
+        class="min-h-9 rounded border border-red-300 px-2.5 py-1.5 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
         @click="deleteScan"
       >
         Delete

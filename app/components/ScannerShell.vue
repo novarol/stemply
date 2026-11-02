@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * ScannerShell — shared chrome for Step 5 engines.
+ * ScannerShell — shared chrome for scanner engines.
  *
  * Engine contract (slot / parent implements):
  * - start(): Promise<void> | void — begin live scanning (when ownStream=false)
@@ -8,10 +8,9 @@
  * - decodeFile(file: File): Promise<{ value: string; format: string }>
  * - emit decoded({ value: string; format: string }) — or call slot onDecoded
  *
- * When ownStream is true (default for the Step 4 stub), this shell owns
- * getUserMedia (facingMode: environment preferred) and exposes the stream /
- * video via slot props. Real engines should set own-stream=false and honor
- * the facingMode prop / start event themselves.
+ * When ownStream is true, this shell owns getUserMedia (facingMode: environment
+ * preferred) and exposes the stream / video via slot props. Engines that manage
+ * their own camera should set own-stream=false and honor facingMode / start.
  */
 import type { DecodedPayload } from '~/types/scan'
 
@@ -331,7 +330,7 @@ function openFilePicker() {
   fileInputEl.value?.click()
 }
 
-/** Let parents / stub simulate guided errors without a real camera failure. */
+/** Dev helper: simulate guided errors without a real camera failure. */
 function simulateError(kind: 'permission' | 'no-camera' | 'insecure' | 'generic') {
   stop()
   if (kind === 'permission') {
@@ -371,7 +370,8 @@ defineExpose({
 
 <template>
   <div class="space-y-4">
-    <div class="relative overflow-hidden rounded-lg bg-black aspect-[3/4] max-h-[70vh] sm:aspect-video sm:max-h-none">
+    <!-- Portrait on phones (one-handed); landscape-friendly on desktop webcam -->
+    <div class="relative mx-auto w-full overflow-hidden rounded-lg bg-black aspect-[3/4] max-h-[min(70vh,36rem)] sm:aspect-video sm:max-h-[min(70vh,28rem)]">
       <!-- Owned stream video -->
       <video
         v-if="ownStream"
@@ -421,11 +421,11 @@ defineExpose({
       {{ errorMessage }}
     </p>
 
-    <div class="flex flex-wrap items-center gap-2">
+    <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
       <button
         v-if="!running"
         type="button"
-        class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white"
+        class="min-h-11 w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50 sm:w-auto dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white"
         :disabled="starting"
         @click="start"
       >
@@ -434,39 +434,41 @@ defineExpose({
       <button
         v-else
         type="button"
-        class="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-800"
+        class="min-h-11 w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100 sm:w-auto dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-800"
         @click="stop"
       >
         Stop
       </button>
 
-      <button
-        type="button"
-        class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-        @click="openFilePicker"
-      >
-        Upload image
-      </button>
-      <input
-        ref="fileInputEl"
-        type="file"
-        accept="image/*"
-        class="hidden"
-        @change="onFileChange"
-      >
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="min-h-11 flex-1 rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 sm:flex-none dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+          @click="openFilePicker"
+        >
+          Upload image
+        </button>
+        <input
+          ref="fileInputEl"
+          type="file"
+          accept="image/*"
+          class="hidden"
+          @change="onFileChange"
+        >
 
-      <button
-        v-if="torchSupported"
-        type="button"
-        class="rounded-md border px-3 py-2 text-sm"
-        :class="torchOn
-          ? 'border-gray-900 bg-gray-900 text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900'
-          : 'border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800'"
-        :aria-pressed="torchOn"
-        @click="applyTorch(!torchOn)"
-      >
-        {{ torchOn ? 'Torch off' : 'Torch' }}
-      </button>
+        <button
+          v-if="torchSupported"
+          type="button"
+          class="min-h-11 rounded-md border px-4 py-2.5 text-sm"
+          :class="torchOn
+            ? 'border-gray-900 bg-gray-900 text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900'
+            : 'border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800'"
+          :aria-pressed="torchOn"
+          @click="applyTorch(!torchOn)"
+        >
+          {{ torchOn ? 'Torch off' : 'Torch' }}
+        </button>
+      </div>
     </div>
 
     <label
@@ -476,7 +478,7 @@ defineExpose({
       <span class="shrink-0">Zoom</span>
       <input
         type="range"
-        class="w-full"
+        class="w-full min-h-11"
         :min="zoomMin"
         :max="zoomMax"
         :step="zoomStep"

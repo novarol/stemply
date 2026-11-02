@@ -10,7 +10,7 @@ const kindClass: Record<string, string> = {
 
 <template>
   <div
-    class="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 px-4 pb-6"
+    class="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
     aria-live="polite"
   >
     <div
