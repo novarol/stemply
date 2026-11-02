@@ -17,23 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🚚 Get latest code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
-      - name: 📦 Use Node.js LTS latest
-        uses: actions/setup-node@v6
+      - name: 📦 Install pnpm and Node.js
+        uses: pnpm/setup@v3
         with:
-          node-version: 'lts/*'
+          cache: true
 
       - name: 🔨 Build Project
         run: |
-          npm install
-          npm run generate
+          pnpm run generate
 
       - name: 📂 Sync files
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./.output/public/
-          server-dir: ${{ secrets.FTP_DIR_PROD }}
