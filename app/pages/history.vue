@@ -1,10 +1,31 @@
+<script setup lang="ts">
+const { list, clearAll } = useScans()
+
+function onClearAll() {
+  if (!list.value.length) return
+  if (!confirm('Clear all scans? This cannot be undone.')) return
+  clearAll()
+}
+</script>
+
 <template>
   <section>
-    <h1 class="text-2xl font-semibold tracking-tight">
-      History
-    </h1>
-    <p class="mt-2 text-gray-600 dark:text-gray-400">
-      Saved scans will appear here once local storage is wired up.
-    </p>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h1 class="text-2xl font-semibold tracking-tight">
+        History
+      </h1>
+      <button
+        v-if="list.length"
+        type="button"
+        class="rounded border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
+        @click="onClearAll"
+      >
+        Clear all
+      </button>
+    </div>
+
+    <div class="mt-6">
+      <RecentScansList />
+    </div>
   </section>
 </template>
