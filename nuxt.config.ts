@@ -21,6 +21,19 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'en',
       },
+      meta: [
+        { name: 'theme-color', content: '#111827' },
+        { name: 'mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
+        { name: 'apple-mobile-web-app-title', content: 'Stemply Scan' },
+      ],
+      link: [
+        { rel: 'manifest', href: '/manifest.webmanifest' },
+        { rel: 'apple-touch-icon', href: '/icons/apple-touch-icon.png' },
+        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/icons/icon-192.png' },
+        { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/icons/icon-512.png' },
+      ],
       // Apply saved theme before paint to reduce FOUC (matches useTheme storage key).
       script: [
         {
@@ -31,3 +44,4 @@ export default defineNuxtConfig({
     },
   },
 })
+
