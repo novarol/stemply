@@ -1,0 +1,39 @@
+name: 🚀 PROD - Deploy website on push
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'app/**'
+      - 'public/**'
+      - 'nuxt.config.ts'
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v6
+
+      - name: 📦 Use Node.js LTS latest
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+
+      - name: 🔨 Build Project
+        run: |
+          npm install
+          npm run generate
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./.output/public/
+          server-dir: ${{ secrets.FTP_DIR_PROD }}
