@@ -22,3 +22,7 @@ logs
 .env
 .env.*
 !.env.example
+
+# Local package stores
+.pnpm-store
+.vendor-tmp

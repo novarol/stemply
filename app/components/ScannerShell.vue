@@ -66,6 +66,8 @@ const slotProps = computed(() => ({
   facingMode: props.facingMode,
   onDecoded: handleDecoded,
   errorMessage: errorMessage.value,
+  setEngineStream,
+  reportStartError,
 }))
 
 function guidedStartError(err: unknown): string {
@@ -103,6 +105,42 @@ function guidedStartError(err: unknown): string {
   }
 
   return 'Could not start the camera. Check permissions and try again.'
+}
+
+function withEngineHint(message: string): string {
+  return `${message} If this engine keeps failing, try another one from the home page.`
+}
+
+/**
+ * Engines that own getUserMedia should call this after start so torch/zoom
+ * can bind to the same MediaStreamTrack.
+ */
+function setEngineStream(stream: MediaStream | null) {
+  if (props.ownStream) return
+
+  mediaStream.value = stream
+  if (stream) {
+    refreshCapabilities()
+    return
+  }
+
+  torchOn.value = false
+  torchSupported.value = false
+  zoomSupported.value = false
+}
+
+/** Pages call this when engine.start() rejects after the shell emitted start. */
+function reportStartError(err: unknown) {
+  if (props.ownStream) {
+    stopOwnedStream()
+  }
+  else {
+    emit('stop')
+    setEngineStream(null)
+  }
+  running.value = false
+  starting.value = false
+  errorMessage.value = withEngineHint(guidedStartError(err))
 }
 
 function refreshCapabilities() {
@@ -255,6 +293,7 @@ function stop() {
   }
   else {
     emit('stop')
+    setEngineStream(null)
   }
   running.value = false
 }
@@ -310,13 +349,21 @@ function simulateError(kind: 'permission' | 'no-camera' | 'insecure' | 'generic'
 }
 
 onBeforeUnmount(() => {
-  stopOwnedStream()
+  if (props.ownStream) {
+    stopOwnedStream()
+  }
+  else {
+    emit('stop')
+    setEngineStream(null)
+  }
 })
 
 defineExpose({
   start,
   stop,
   handleDecoded,
+  setEngineStream,
+  reportStartError,
   simulateError,
   running,
 })

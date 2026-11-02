@@ -1,19 +1,50 @@
+<script setup lang="ts">
+const engines = [
+  {
+    to: '/scan/html5',
+    title: 'html5-qrcode',
+    description: 'Popular JS scanner with built-in camera and file helpers.',
+  },
+  {
+    to: '/scan/zxing',
+    title: 'ZXing',
+    description: 'BrowserMultiFormatReader with a DIY video element.',
+  },
+  {
+    to: '/scan/native',
+    title: 'BarcodeDetector',
+    description: 'Native API when supported; ZXing fallback otherwise.',
+  },
+] as const
+</script>
+
 <template>
   <section>
     <h1 class="text-2xl font-semibold tracking-tight">
       Scan
     </h1>
     <p class="mt-2 text-gray-600 dark:text-gray-400">
-      Camera scanner and engine selector will live here in a later step.
+      Pick a scanner engine to compare live and image decode on this device.
     </p>
-    <p class="mt-3">
-      <NuxtLink
-        to="/scan/demo"
-        class="text-sm font-medium text-gray-900 underline-offset-2 hover:underline dark:text-gray-100"
+
+    <ul class="mt-6 space-y-3">
+      <li
+        v-for="engine in engines"
+        :key="engine.to"
       >
-        Open scanner shell demo →
-      </NuxtLink>
-    </p>
+        <NuxtLink
+          :to="engine.to"
+          class="block rounded-lg border border-gray-200 bg-white px-4 py-3 transition hover:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-600"
+        >
+          <span class="font-medium text-gray-900 dark:text-gray-100">
+            {{ engine.title }}
+          </span>
+          <span class="mt-1 block text-sm text-gray-600 dark:text-gray-400">
+            {{ engine.description }}
+          </span>
+        </NuxtLink>
+      </li>
+    </ul>
 
     <div class="mt-8">
       <div class="mb-3 flex items-baseline justify-between gap-3">
