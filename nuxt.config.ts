@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Stemply Scan',
+      title: 'Scanner',
       htmlAttrs: {
         lang: 'en',
       },
@@ -28,7 +28,7 @@ export default defineNuxtConfig({
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-        { name: 'apple-mobile-web-app-title', content: 'Stemply Scan' },
+        { name: 'apple-mobile-web-app-title', content: 'Scanner' },
       ],
       link: [
         { rel: 'manifest', href: '/manifest.webmanifest' },
@@ -39,8 +39,8 @@ export default defineNuxtConfig({
       // Apply saved theme before paint to reduce FOUC (matches useTheme storage key).
       script: [
         {
-          key: 'stemply-theme-init',
-          textContent: `(function(){try{var t=localStorage.getItem('stemply-scan:theme');if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark'}else{document.documentElement.classList.remove('dark');document.documentElement.style.colorScheme='light'}}catch(e){}})();`,
+          key: 'scanner-theme-init',
+          textContent: `(function(){try{var t=localStorage.getItem('scanner:theme');if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark'}else{document.documentElement.classList.remove('dark');document.documentElement.style.colorScheme='light'}}catch(e){}})();`,
         },
       ],
     },

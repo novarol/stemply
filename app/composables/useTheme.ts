@@ -1,6 +1,6 @@
 export type Theme = 'light' | 'dark'
 
-const STORAGE_KEY = 'stemply-scan:theme'
+const STORAGE_KEY = 'scanner:theme'
 
 /** Shared client state. */
 const theme = ref<Theme>('light')

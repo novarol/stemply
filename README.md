@@ -1,4 +1,4 @@
-# Stemply Scan
+# Scanner
 
 Client-only QR and barcode scanner **PWA prototype**. Compare three browser engines side by side, keep a short local history, and install to the home screen — no accounts, no backend.
 

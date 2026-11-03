@@ -1,4 +1,4 @@
-/* Stemply Scan service worker — Workbox via CDN.
+/* Scanner service worker — Workbox via CDN.
  * Precache list is injected by scripts/pwa-precache.mjs after `nuxt generate`.
  * Do not edit the injected copy under .output. */
 /* eslint-disable no-undef */
@@ -20,7 +20,7 @@ workbox.routing.registerRoute(
     || url.pathname.startsWith('/icons/')
     || /\.(?:woff2?|ttf|otf|eot)$/i.test(url.pathname),
   new workbox.strategies.CacheFirst({
-    cacheName: 'stemply-icons-fonts',
+    cacheName: 'scanner-icons-fonts',
     plugins: [
       new workbox.expiration.ExpirationPlugin({
         maxEntries: 64,
@@ -34,7 +34,7 @@ workbox.routing.registerRoute(
 workbox.routing.registerRoute(
   ({ request }) => request.mode === 'navigate',
   new workbox.strategies.NetworkFirst({
-    cacheName: 'stemply-pages',
+    cacheName: 'scanner-pages',
     networkTimeoutSeconds: 3,
     plugins: [
       new workbox.expiration.ExpirationPlugin({
@@ -52,7 +52,7 @@ workbox.routing.registerRoute(
     || request.destination === 'style'
     || /\.(?:js|css|mjs)$/i.test(new URL(request.url).pathname),
   new workbox.strategies.StaleWhileRevalidate({
-    cacheName: 'stemply-static-assets',
+    cacheName: 'scanner-static-assets',
     plugins: [
       new workbox.expiration.ExpirationPlugin({
         maxEntries: 96,
@@ -69,7 +69,7 @@ workbox.routing.registerRoute(
     && (request.destination === 'image'
       || /\.(?:png|jpe?g|gif|svg|webp|ico|webmanifest)$/i.test(url.pathname)),
   new workbox.strategies.StaleWhileRevalidate({
-    cacheName: 'stemply-images',
+    cacheName: 'scanner-images',
     plugins: [
       new workbox.expiration.ExpirationPlugin({
         maxEntries: 64,

@@ -1,6 +1,6 @@
 {
-  "name": "Stemply Scan",
-  "short_name": "Stemply Scan",
+  "name": "Scanner",
+  "short_name": "Scanner",
   "description": "QR and barcode scanner prototype",
   "start_url": "/",
   "scope": "/",

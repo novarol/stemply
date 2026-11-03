@@ -1,6 +1,6 @@
 import type { ScanRecord } from '~/types/scan'
 
-const STORAGE_KEY = 'stemply-scan:v1'
+const STORAGE_KEY = 'scanner:v1'
 const MAX_SCANS = 50
 
 /** Shared client state — newest-first. */

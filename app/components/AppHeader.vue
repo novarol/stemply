@@ -19,7 +19,7 @@ const historyActive = computed(() => route.path.startsWith('/history'))
           to="/"
           class="shrink-0 text-base font-semibold tracking-tight text-gray-900 sm:text-lg dark:text-white"
         >
-          Stemply Scan
+          Scanner
         </NuxtLink>
         <nav class="flex items-center gap-1 text-sm sm:gap-4">
           <NuxtLink
