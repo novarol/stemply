@@ -17,9 +17,17 @@ export default defineNuxtPlugin(() => {
     window.location.reload()
   })
 
-  window.addEventListener('load', () => {
+  const register = () => {
     navigator.serviceWorker.register('/sw.js').catch((err) => {
       console.warn('[pwa] service worker registration failed', err)
     })
-  })
+  }
+
+  // Nuxt client plugins often run after `window` `load` on SPA builds; waiting
+  // only for `load` would skip registration entirely and break offline.
+  if (document.readyState === 'complete') {
+    register()
+  } else {
+    window.addEventListener('load', register, { once: true })
+  }
 })
