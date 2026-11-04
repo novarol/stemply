@@ -405,21 +405,6 @@ defineExpose({
         Camera stopped
       </div>
 
-      <!-- Viewfinder overlay -->
-      <div
-        class="pointer-events-none absolute inset-0"
-        aria-hidden="true"
-      >
-        <div class="absolute left-[12%] top-[18%] h-10 w-10 border-l-2 border-t-2 border-white/90" />
-        <div class="absolute right-[12%] top-[18%] h-10 w-10 border-r-2 border-t-2 border-white/90" />
-        <div class="absolute bottom-[28%] left-[12%] h-10 w-10 border-b-2 border-l-2 border-white/90" />
-        <div class="absolute bottom-[28%] right-[12%] h-10 w-10 border-b-2 border-r-2 border-white/90" />
-        <div class="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2">
-          <div class="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/70" />
-          <div class="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-white/70" />
-        </div>
-      </div>
-
       <!-- Interactive controls over the preview -->
       <div class="pointer-events-none absolute inset-0 z-10">
         <!-- Torch -->
