@@ -190,21 +190,26 @@ async function applyZoom(value: number) {
   const track = mediaStream.value?.getVideoTracks()[0]
   if (!track || !zoomSupported.value) return
 
-  zoomValue.value = value
+  const clamped = Math.min(zoomMax.value, Math.max(zoomMin.value, value))
+  zoomValue.value = clamped
   try {
     await track.applyConstraints({
-      advanced: [{ zoom: value } as MediaTrackConstraintSet],
+      advanced: [{ zoom: clamped } as MediaTrackConstraintSet],
     })
   }
   catch {
     try {
-      await track.applyConstraints({ zoom: value } as MediaTrackConstraints)
+      await track.applyConstraints({ zoom: clamped } as MediaTrackConstraints)
     }
     catch {
       toast.error('Zoom is not available on this camera.')
       zoomSupported.value = false
     }
   }
+}
+
+function nudgeZoom(delta: number) {
+  void applyZoom(zoomValue.value + delta)
 }
 
 function stopOwnedStream() {
@@ -448,18 +453,40 @@ defineExpose({
         <!-- Vertical zoom -->
         <div
           v-if="zoomSupported"
-          class="pointer-events-auto absolute right-3 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1"
+          class="pointer-events-auto absolute right-2 top-1/2 flex -translate-y-1/2 touch-none flex-col items-center gap-1.5"
         >
-          <input
-            type="range"
-            class="scanner-zoom-slider h-28 w-8 cursor-pointer appearance-none bg-transparent"
-            :min="zoomMin"
-            :max="zoomMax"
-            :step="zoomStep"
-            :value="zoomValue"
-            aria-label="Zoom"
-            @input="applyZoom(Number(($event.target as HTMLInputElement).value))"
+          <button
+            type="button"
+            class="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-lg leading-none text-white backdrop-blur-sm hover:bg-black/55 disabled:opacity-40"
+            aria-label="Zoom in"
+            :disabled="zoomValue >= zoomMax"
+            @click="nudgeZoom(zoomStep)"
           >
+            +
+          </button>
+          <div
+            class="flex h-40 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur-sm"
+          >
+            <input
+              type="range"
+              class="scanner-zoom-slider h-36 w-11 cursor-pointer appearance-none bg-transparent"
+              :min="zoomMin"
+              :max="zoomMax"
+              :step="zoomStep"
+              :value="zoomValue"
+              aria-label="Zoom"
+              @input="applyZoom(Number(($event.target as HTMLInputElement).value))"
+            >
+          </div>
+          <button
+            type="button"
+            class="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-lg leading-none text-white backdrop-blur-sm hover:bg-black/55 disabled:opacity-40"
+            aria-label="Zoom out"
+            :disabled="zoomValue <= zoomMin"
+            @click="nudgeZoom(-zoomStep)"
+          >
+            −
+          </button>
         </div>
 
         <!-- Bottom actions -->
@@ -535,10 +562,11 @@ defineExpose({
 .scanner-zoom-slider {
   writing-mode: vertical-lr;
   direction: rtl;
+  touch-action: none;
 }
 
 .scanner-zoom-slider::-webkit-slider-runnable-track {
-  width: 0.25rem;
+  width: 0.375rem;
   height: 100%;
   border-radius: 9999px;
   background: rgb(255 255 255 / 0.35);
@@ -547,9 +575,9 @@ defineExpose({
 .scanner-zoom-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 0.875rem;
-  height: 0.875rem;
-  margin-left: -0.3125rem;
+  width: 1.375rem;
+  height: 1.375rem;
+  margin-left: -0.5rem;
   border-radius: 9999px;
   border: 1px solid rgb(255 255 255 / 0.5);
   background: rgb(255 255 255 / 0.95);
@@ -557,17 +585,17 @@ defineExpose({
 }
 
 .scanner-zoom-slider::-moz-range-track {
-  width: 0.25rem;
+  width: 0.375rem;
   height: 100%;
   border-radius: 9999px;
   background: rgb(255 255 255 / 0.35);
 }
 
 .scanner-zoom-slider::-moz-range-thumb {
-  width: 0.875rem;
-  height: 0.875rem;
-  border-radius: 9999px;
+  width: 1.375rem;
+  height: 1.375rem;
   border: 1px solid rgb(255 255 255 / 0.5);
+  border-radius: 9999px;
   background: rgb(255 255 255 / 0.95);
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
 }
