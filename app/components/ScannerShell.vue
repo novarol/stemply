@@ -58,6 +58,12 @@ const zoomMax = ref(1)
 const zoomStep = ref(0.1)
 const zoomValue = ref(1)
 
+/** Solid enough to read over the idle veil. */
+const overlayActionIdleClass = 'border-white/25 bg-black/70 hover:bg-black/80'
+
+/** Semi-transparent while the live preview is visible. */
+const overlayActionActiveClass = 'border-white/20 bg-black/40 hover:bg-black/55'
+
 const slotProps = computed(() => ({
   running: running.value,
   stream: mediaStream.value,
@@ -404,11 +410,98 @@ defineExpose({
       >
         <div class="absolute left-[12%] top-[18%] h-10 w-10 border-l-2 border-t-2 border-white/90" />
         <div class="absolute right-[12%] top-[18%] h-10 w-10 border-r-2 border-t-2 border-white/90" />
-        <div class="absolute bottom-[22%] left-[12%] h-10 w-10 border-b-2 border-l-2 border-white/90" />
-        <div class="absolute bottom-[22%] right-[12%] h-10 w-10 border-b-2 border-r-2 border-white/90" />
+        <div class="absolute bottom-[28%] left-[12%] h-10 w-10 border-b-2 border-l-2 border-white/90" />
+        <div class="absolute bottom-[28%] right-[12%] h-10 w-10 border-b-2 border-r-2 border-white/90" />
         <div class="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2">
           <div class="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/70" />
           <div class="absolute left-0 top-1/2 h-px w-full -translate-y-1/2 bg-white/70" />
+        </div>
+      </div>
+
+      <!-- Interactive controls over the preview -->
+      <div class="pointer-events-none absolute inset-0 z-10">
+        <!-- Torch -->
+        <button
+          v-if="torchSupported"
+          type="button"
+          class="pointer-events-auto absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full border backdrop-blur-sm transition-colors"
+          :class="torchOn
+            ? 'border-white/40 bg-white/90 text-gray-900'
+            : 'border-white/20 bg-black/40 text-white hover:bg-black/55'"
+          :aria-label="torchOn ? 'Turn torch off' : 'Turn torch on'"
+          :aria-pressed="torchOn"
+          @click="applyTorch(!torchOn)"
+        >
+          <svg
+            class="h-5 w-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M9 18h6" />
+            <path d="M10 21h4" />
+            <path d="M12 2a7 7 0 0 0-4.2 12.5c.7.6 1.1 1.3 1.3 2.5h5.8c.2-1.2.6-1.9 1.3-2.5A7 7 0 0 0 12 2z" />
+          </svg>
+        </button>
+
+        <!-- Vertical zoom -->
+        <div
+          v-if="zoomSupported"
+          class="pointer-events-auto absolute right-3 top-1/2 flex -translate-y-1/2 flex-col items-center gap-1"
+        >
+          <input
+            type="range"
+            class="scanner-zoom-slider h-28 w-8 cursor-pointer appearance-none bg-transparent"
+            :min="zoomMin"
+            :max="zoomMax"
+            :step="zoomStep"
+            :value="zoomValue"
+            aria-label="Zoom"
+            @input="applyZoom(Number(($event.target as HTMLInputElement).value))"
+          >
+        </div>
+
+        <!-- Bottom actions -->
+        <div class="pointer-events-auto absolute inset-x-0 bottom-0 flex gap-2 p-3">
+          <button
+            v-if="!running"
+            type="button"
+            class="min-h-11 flex-1 rounded-md border px-4 py-2.5 text-sm font-medium text-white backdrop-blur-sm disabled:opacity-50 sm:flex-none"
+            :class="overlayActionIdleClass"
+            :disabled="starting"
+            @click="start"
+          >
+            {{ starting ? 'Starting…' : 'Start' }}
+          </button>
+          <button
+            v-else
+            type="button"
+            class="min-h-11 flex-1 rounded-md border px-4 py-2.5 text-sm font-medium text-white backdrop-blur-sm sm:flex-none"
+            :class="overlayActionActiveClass"
+            @click="stop"
+          >
+            Stop
+          </button>
+
+          <button
+            type="button"
+            class="min-h-11 flex-1 rounded-md border px-4 py-2.5 text-sm text-white backdrop-blur-sm sm:flex-none"
+            :class="running ? overlayActionActiveClass : overlayActionIdleClass"
+            @click="openFilePicker"
+          >
+            Upload image
+          </button>
+          <input
+            ref="fileInputEl"
+            type="file"
+            accept="image/*"
+            class="hidden"
+            @change="onFileChange"
+          >
         </div>
       </div>
     </div>
@@ -420,73 +513,6 @@ defineExpose({
     >
       {{ errorMessage }}
     </p>
-
-    <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-      <button
-        v-if="!running"
-        type="button"
-        class="min-h-11 w-full rounded-md bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-50 sm:w-auto dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white"
-        :disabled="starting"
-        @click="start"
-      >
-        {{ starting ? 'Starting…' : 'Start' }}
-      </button>
-      <button
-        v-else
-        type="button"
-        class="min-h-11 w-full rounded-md border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-100 sm:w-auto dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-800"
-        @click="stop"
-      >
-        Stop
-      </button>
-
-      <div class="flex flex-wrap gap-2">
-        <button
-          type="button"
-          class="min-h-11 flex-1 rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 sm:flex-none dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-          @click="openFilePicker"
-        >
-          Upload image
-        </button>
-        <input
-          ref="fileInputEl"
-          type="file"
-          accept="image/*"
-          class="hidden"
-          @change="onFileChange"
-        >
-
-        <button
-          v-if="torchSupported"
-          type="button"
-          class="min-h-11 rounded-md border px-4 py-2.5 text-sm"
-          :class="torchOn
-            ? 'border-gray-900 bg-gray-900 text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900'
-            : 'border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800'"
-          :aria-pressed="torchOn"
-          @click="applyTorch(!torchOn)"
-        >
-          {{ torchOn ? 'Torch off' : 'Torch' }}
-        </button>
-      </div>
-    </div>
-
-    <label
-      v-if="zoomSupported"
-      class="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300"
-    >
-      <span class="shrink-0">Zoom</span>
-      <input
-        type="range"
-        class="w-full min-h-11"
-        :min="zoomMin"
-        :max="zoomMax"
-        :step="zoomStep"
-        :value="zoomValue"
-        @input="applyZoom(Number(($event.target as HTMLInputElement).value))"
-      >
-      <span class="w-10 shrink-0 tabular-nums">{{ zoomValue.toFixed(1) }}</span>
-    </label>
 
     <div
       v-if="showRecent"
@@ -507,3 +533,45 @@ defineExpose({
     </div>
   </div>
 </template>
+
+<style scoped>
+.scanner-zoom-slider {
+  writing-mode: vertical-lr;
+  direction: rtl;
+}
+
+.scanner-zoom-slider::-webkit-slider-runnable-track {
+  width: 0.25rem;
+  height: 100%;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.35);
+}
+
+.scanner-zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-left: -0.3125rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.95);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+}
+
+.scanner-zoom-slider::-moz-range-track {
+  width: 0.25rem;
+  height: 100%;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.35);
+}
+
+.scanner-zoom-slider::-moz-range-thumb {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(255 255 255 / 0.5);
+  background: rgb(255 255 255 / 0.95);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+}
+</style>
