@@ -17,7 +17,7 @@ workbox.precaching.cleanupOutdatedCaches()
 workbox.routing.registerRoute(
   ({ request, url }) =>
     request.destination === 'font'
-    || url.pathname.startsWith('/icons/')
+    || url.pathname.startsWith('/pwa-icons/')
     || /\.(?:woff2?|ttf|otf|eot)$/i.test(url.pathname),
   new workbox.strategies.CacheFirst({
     cacheName: 'scanner-icons-fonts',

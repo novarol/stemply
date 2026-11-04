@@ -34,11 +34,13 @@ export default defineNuxtConfig({
         { rel: 'manifest', href: '/manifest.webmanifest' },
         // Cache-busted root icon first — Safari caches failed/old apple-touch URLs aggressively.
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon-v2.png' },
-        { rel: 'apple-touch-icon', sizes: '167x167', href: '/icons/apple-touch-icon-167.png' },
-        { rel: 'apple-touch-icon', sizes: '152x152', href: '/icons/apple-touch-icon-152.png' },
-        { rel: 'apple-touch-icon', sizes: '120x120', href: '/icons/apple-touch-icon-120.png' },
-        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/icons/icon-192.png?v=2' },
-        { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/icons/icon-512.png?v=2' },
+        { rel: 'apple-touch-icon', sizes: '167x167', href: '/pwa-icons/apple-touch-icon-167.png' },
+        { rel: 'apple-touch-icon', sizes: '152x152', href: '/pwa-icons/apple-touch-icon-152.png' },
+        { rel: 'apple-touch-icon', sizes: '120x120', href: '/pwa-icons/apple-touch-icon-120.png' },
+        { rel: 'icon', href: '/favicon.ico', sizes: '48x48' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/pwa-icons/icon-32.png' },
+        { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/pwa-icons/icon-192.png' },
+        { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/pwa-icons/icon-512.png' },
       ],
       // Apply saved theme before paint to reduce FOUC (matches useTheme storage key).
       script: [
