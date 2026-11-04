@@ -1,16 +1,13 @@
 # Scanner
 
-Client-only QR and barcode scanner **PWA prototype**. Compare three browser engines side by side, keep a short local history, and install to the home screen — no accounts, no backend.
+Client-only QR and barcode scanner **PWA prototype**. Scan with the camera or from an image, keep a short local history, and install to the home screen — no accounts, no backend.
 
 ## Stack
 
 - **Nuxt 4** (SPA / `ssr: false`)
 - **Tailwind CSS** (`@nuxtjs/tailwindcss`, class dark mode)
 - **pnpm**
-- **Engines**
-  - [html5-qrcode](https://github.com/mebjas/html5-qrcode)
-  - [@zxing/browser](https://github.com/zxing-js/browser) (`BrowserMultiFormatReader`)
-  - Native [BarcodeDetector](https://developer.mozilla.org/en-US/docs/Web/API/BarcodeDetector) with ZXing fallback
+- **[html5-qrcode](https://github.com/mebjas/html5-qrcode)** for live camera and file decode
 
 ## Setup
 
@@ -70,9 +67,9 @@ Reload the shell offline to confirm navigation and history still load. Starting 
 
 ## Manual test checklist
 
-### Engines (html5-qrcode, ZXing, BarcodeDetector)
+### Scanner
 
-- [ ] **Start** live camera on each engine page
+- [ ] **Start** live camera on `/`
 - [ ] **Stop** ends the preview / releases the camera
 - [ ] **Live scan** of a QR or barcode saves a result
 - [ ] **Upload image** decodes a still and saves a result
@@ -107,11 +104,10 @@ Reload the shell offline to confirm navigation and history still load. Starting 
 
 | Path | Page |
 | --- | --- |
-| `/` | Engine picker + recent scans |
-| `/scan/html5` | html5-qrcode |
-| `/scan/zxing` | ZXing |
-| `/scan/native` | BarcodeDetector (+ ZXing fallback) |
+| `/` | html5-qrcode scanner + recent scans |
 | `/history` | Full history |
+
+Old `/scan/*` paths redirect to `/`.
 
 ## Out of scope (prototype)
 

@@ -15,6 +15,11 @@ export default defineNuxtConfig({
       darkMode: 'class',
     },
   },
+  routeRules: {
+    '/scan/html5': { redirect: '/' },
+    '/scan/zxing': { redirect: '/' },
+    '/scan/native': { redirect: '/' },
+  },
   app: {
     head: {
       title: 'Scanner',

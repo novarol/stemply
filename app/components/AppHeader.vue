@@ -14,9 +14,7 @@ const nextPreferenceLabel = computed(() => {
   return 'system'
 })
 
-const scanActive = computed(() =>
-  route.path === '/' || route.path.startsWith('/scan'),
-)
+const scanActive = computed(() => route.path === '/')
 
 const historyActive = computed(() => route.path.startsWith('/history'))
 </script>

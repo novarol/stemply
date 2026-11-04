@@ -112,10 +112,6 @@ function guidedStartError(err: unknown): string {
   return 'Could not start the camera. Check permissions and try again.'
 }
 
-function withEngineHint(message: string): string {
-  return `${message} If this engine keeps failing, try another one from the home page.`
-}
-
 /**
  * Engines that own getUserMedia should call this after start so torch/zoom
  * can bind to the same MediaStreamTrack.
@@ -145,7 +141,7 @@ function reportStartError(err: unknown) {
   }
   running.value = false
   starting.value = false
-  errorMessage.value = withEngineHint(guidedStartError(err))
+  errorMessage.value = guidedStartError(err)
 }
 
 function refreshCapabilities() {
@@ -333,6 +329,7 @@ async function onFileChange(event: Event) {
 }
 
 function openFilePicker() {
+  stop()
   fileInputEl.value?.click()
 }
 
