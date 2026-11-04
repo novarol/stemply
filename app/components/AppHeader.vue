@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ThemePreference } from '~/composables/useTheme'
+
 const route = useRoute()
 const { preference, cycle } = useTheme()
 
@@ -17,6 +19,17 @@ const nextPreferenceLabel = computed(() => {
 const scanActive = computed(() => route.path === '/')
 
 const historyActive = computed(() => route.path.startsWith('/history'))
+
+function isSelected(value: ThemePreference) {
+  return preference.value === value
+}
+
+const slotClass = (value: ThemePreference) => [
+  'flex h-8 w-8 items-center justify-center rounded',
+  isSelected(value)
+    ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
+    : 'text-gray-400 dark:text-gray-500',
+]
 </script>
 
 <template>
@@ -50,11 +63,68 @@ const historyActive = computed(() => route.path.startsWith('/history'))
       </div>
       <button
         type="button"
-        class="min-h-10 shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
+        class="flex shrink-0 items-center rounded-md border border-gray-300 p-0.5 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800/60"
         :aria-label="`Theme: ${preferenceLabel}. Switch to ${nextPreferenceLabel} mode`"
         @click="cycle"
       >
-        {{ preferenceLabel }}
+        <span
+          aria-hidden="true"
+          :class="slotClass('light')"
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2" />
+            <path d="M12 20v2" />
+            <path d="M4.93 4.93l1.41 1.41" />
+            <path d="M17.66 17.66l1.41 1.41" />
+            <path d="M2 12h2" />
+            <path d="M20 12h2" />
+            <path d="M4.93 19.07l1.41-1.41" />
+            <path d="M17.66 6.34l1.41-1.41" />
+          </svg>
+        </span>
+        <span
+          aria-hidden="true"
+          :class="slotClass('system')"
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M8 21h8" />
+            <path d="M12 17v4" />
+          </svg>
+        </span>
+        <span
+          aria-hidden="true"
+          :class="slotClass('dark')"
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 14.3A9 9 0 1 1 9.7 3 7 7 0 0 0 21 14.3z" />
+          </svg>
+        </span>
       </button>
     </div>
   </header>
