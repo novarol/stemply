@@ -23,7 +23,7 @@ export default defineNuxtConfig({
       },
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
-        { name: 'theme-color', content: '#111827' },
+        { name: 'theme-color', content: '#f9fafb' },
         { name: 'description', content: 'Client-only QR and barcode scanner PWA prototype' },
         { name: 'mobile-web-app-capable', content: 'yes' },
         { name: 'apple-mobile-web-app-capable', content: 'yes' },
@@ -42,11 +42,11 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', sizes: '192x192', href: '/pwa-icons/icon-192.png' },
         { rel: 'icon', type: 'image/png', sizes: '512x512', href: '/pwa-icons/icon-512.png' },
       ],
-      // Apply saved theme before paint to reduce FOUC (matches useTheme storage key).
+      // Apply saved / system theme before paint to reduce FOUC (matches useTheme).
       script: [
         {
           key: 'scanner-theme-init',
-          textContent: `(function(){try{var t=localStorage.getItem('scanner:theme');if(t==='dark'){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark'}else{document.documentElement.classList.remove('dark');document.documentElement.style.colorScheme='light'}}catch(e){}})();`,
+          textContent: `(function(){try{var t=localStorage.getItem('scanner:theme');var dark=t==='dark'||((t!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);var s=dark?'dark':'light';document.documentElement.classList.toggle('dark',dark);document.documentElement.style.colorScheme=s}catch(e){}})();`,
         },
       ],
     },

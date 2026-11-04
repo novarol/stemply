@@ -1,8 +1,18 @@
 <script setup lang="ts">
 const route = useRoute()
-const { theme, toggle } = useTheme()
+const { preference, cycle } = useTheme()
 
-const isDark = computed(() => theme.value === 'dark')
+const preferenceLabel = computed(() => {
+  if (preference.value === 'system') return 'System'
+  if (preference.value === 'dark') return 'Dark'
+  return 'Light'
+})
+
+const nextPreferenceLabel = computed(() => {
+  if (preference.value === 'system') return 'light'
+  if (preference.value === 'light') return 'dark'
+  return 'system'
+})
 
 const scanActive = computed(() =>
   route.path === '/' || route.path.startsWith('/scan'),
@@ -43,10 +53,10 @@ const historyActive = computed(() => route.path.startsWith('/history'))
       <button
         type="button"
         class="min-h-10 shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800"
-        :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-        @click="toggle"
+        :aria-label="`Theme: ${preferenceLabel}. Switch to ${nextPreferenceLabel} mode`"
+        @click="cycle"
       >
-        {{ isDark ? 'Light' : 'Dark' }}
+        {{ preferenceLabel }}
       </button>
     </div>
   </header>
