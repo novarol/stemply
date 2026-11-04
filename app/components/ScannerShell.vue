@@ -212,6 +212,64 @@ function nudgeZoom(delta: number) {
   void applyZoom(zoomValue.value + delta)
 }
 
+const ZOOM_HOLD_DELAY_MS = 350
+const ZOOM_HOLD_INTERVAL_MS = 70
+
+let zoomHoldTimeout: ReturnType<typeof setTimeout> | null = null
+let zoomHoldInterval: ReturnType<typeof setInterval> | null = null
+
+function stopZoomHold() {
+  if (zoomHoldTimeout !== null) {
+    clearTimeout(zoomHoldTimeout)
+    zoomHoldTimeout = null
+  }
+  if (zoomHoldInterval !== null) {
+    clearInterval(zoomHoldInterval)
+    zoomHoldInterval = null
+  }
+}
+
+function canNudgeZoom(delta: number): boolean {
+  if (delta > 0) return zoomValue.value < zoomMax.value
+  if (delta < 0) return zoomValue.value > zoomMin.value
+  return false
+}
+
+function startZoomHold(delta: number) {
+  stopZoomHold()
+  if (!canNudgeZoom(delta)) return
+
+  nudgeZoom(delta)
+
+  zoomHoldTimeout = setTimeout(() => {
+    zoomHoldTimeout = null
+    zoomHoldInterval = setInterval(() => {
+      if (!canNudgeZoom(delta)) {
+        stopZoomHold()
+        return
+      }
+      nudgeZoom(delta)
+    }, ZOOM_HOLD_INTERVAL_MS)
+  }, ZOOM_HOLD_DELAY_MS)
+}
+
+function onZoomPointerDown(event: PointerEvent, delta: number) {
+  if (event.button !== 0) return
+  event.preventDefault()
+  const target = event.currentTarget
+  if (target instanceof HTMLElement) {
+    target.setPointerCapture(event.pointerId)
+  }
+  startZoomHold(delta)
+}
+
+function onZoomKeyActivate(event: KeyboardEvent, delta: number) {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+  event.preventDefault()
+  if (event.repeat) return
+  nudgeZoom(delta)
+}
+
 function stopOwnedStream() {
   if (mediaStream.value) {
     for (const track of mediaStream.value.getTracks()) {
@@ -356,6 +414,7 @@ function simulateError(kind: 'permission' | 'no-camera' | 'insecure' | 'generic'
 }
 
 onBeforeUnmount(() => {
+  stopZoomHold()
   if (props.ownStream) {
     stopOwnedStream()
   }
@@ -445,7 +504,10 @@ defineExpose({
             class="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-lg leading-none text-white backdrop-blur-sm hover:bg-black/55 disabled:opacity-40"
             aria-label="Zoom in"
             :disabled="zoomValue >= zoomMax"
-            @click="nudgeZoom(zoomStep)"
+            @pointerdown="onZoomPointerDown($event, zoomStep)"
+            @pointerup="stopZoomHold"
+            @pointercancel="stopZoomHold"
+            @keydown="onZoomKeyActivate($event, zoomStep)"
           >
             +
           </button>
@@ -468,7 +530,10 @@ defineExpose({
             class="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-lg leading-none text-white backdrop-blur-sm hover:bg-black/55 disabled:opacity-40"
             aria-label="Zoom out"
             :disabled="zoomValue <= zoomMin"
-            @click="nudgeZoom(-zoomStep)"
+            @pointerdown="onZoomPointerDown($event, -zoomStep)"
+            @pointerup="stopZoomHold"
+            @pointercancel="stopZoomHold"
+            @keydown="onZoomKeyActivate($event, -zoomStep)"
           >
             −
           </button>
